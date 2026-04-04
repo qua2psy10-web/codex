@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>盛土法面 安定計算アプリ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>盛土法面の安定計算（簡易）</h1>
+      <p class="lead">
+        無限長法面モデルを使って、安全率（Fs）を計算します。設計の最終判断には詳細解析（円弧すべり法など）を実施してください。
+      </p>
+
+      <section class="card">
+        <h2>入力条件</h2>
+        <form id="slope-form" novalidate>
+          <div class="grid">
+            <label>
+              法面高さ H (m)
+              <input type="number" step="0.1" min="0.1" id="height" value="8" required />
+            </label>
+
+            <label>
+              法面勾配 1 : n（例 1:1.5 → n=1.5）
+              <input type="number" step="0.01" min="0.1" id="slopeRatio" value="1.5" required />
+            </label>
+
+            <label>
+              単位体積重量 γ (kN/m³)
+              <input type="number" step="0.1" min="1" id="gamma" value="18" required />
+            </label>
+
+            <label>
+              粘着力 c' (kPa)
+              <input type="number" step="0.1" min="0" id="cohesion" value="12" required />
+            </label>
+
+            <label>
+              内部摩擦角 φ' (°)
+              <input type="number" step="0.1" min="1" max="89" id="phi" value="30" required />
+            </label>
+
+            <label>
+              間隙水圧比 r<sub>u</sub> (0〜0.9)
+              <input type="number" step="0.01" min="0" max="0.9" id="ru" value="0.15" required />
+            </label>
+          </div>
+
+          <button type="submit">計算する</button>
+          <p id="error" class="error" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="card" id="result-card" hidden>
+        <h2>計算結果</h2>
+        <p class="result-line"><strong>法面角 β:</strong> <span id="beta"></span> °</p>
+        <p class="result-line"><strong>安全率 Fs:</strong> <span id="fs"></span></p>
+        <p class="result-line"><strong>判定:</strong> <span id="judge"></span></p>
+
+        <details>
+          <summary>計算式</summary>
+          <p>
+            Fs = c' / (γ H sinβ cosβ) + ((1 - r<sub>u</sub>) tanφ') / tanβ
+          </p>
+          <p>
+            ※本アプリは概略検討向けです。必要に応じて地震時、浸透流、円弧すべり等を考慮してください。
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
