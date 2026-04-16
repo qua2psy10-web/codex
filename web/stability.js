@@ -114,8 +114,13 @@ function calculateFelleniusFS(input) {
 
 const methodEl = document.getElementById('method');
 const btn = document.getElementById('calc');
+const resetBtn = document.getElementById('reset');
 const form = document.getElementById('calc-form');
 const resultEl = document.getElementById('result');
+const methodLabelEl = document.getElementById('method-label');
+const fsValueEl = document.getElementById('fs-value');
+const judgeTextEl = document.getElementById('judge-text');
+const statusChipEl = document.getElementById('status-chip');
 const infiniteFields = document.getElementById('infinite-fields');
 const felleniusFields = document.getElementById('fellenius-fields');
 
@@ -125,26 +130,62 @@ function refreshVisibility() {
   felleniusFields.style.display = isInfinite ? 'none' : 'contents';
 }
 
+function parsePayload() {
+  const payload = Object.fromEntries(new FormData(form).entries());
+  Object.keys(payload).forEach((key) => {
+    if (key !== 'method') payload[key] = Number(payload[key]);
+  });
+  return payload;
+}
+
+function updateResult(result, requiredFs) {
+  const methodLabel = result.method === 'fellenius' ? 'Fellenius法（円弧探索付き分割法）' : '無限長斜面法';
+  const stableText = result.is_stable ? '安定（必要安全率を満足）' : '不安定（対策が必要）';
+  methodLabelEl.innerHTML = `<strong>${methodLabel}</strong>`;
+  fsValueEl.textContent = result.factor_of_safety.toFixed(3);
+  judgeTextEl.textContent = `${stableText} / 要求FS: ${requiredFs.toFixed(2)}`;
+
+  statusChipEl.textContent = result.is_stable ? '判定: 安定' : '判定: 不安定';
+  statusChipEl.className = `status-chip ${result.is_stable ? 'status-ok' : 'status-ng'}`;
+
+  resultEl.innerHTML = [
+    `<strong>計算手法:</strong> ${methodLabel}`,
+    `<strong>安全率 FS:</strong> ${result.factor_of_safety.toFixed(3)}`,
+    `<strong>判定:</strong> ${stableText}`,
+  ].join('<br/>');
+}
+
+function showError(error) {
+  methodLabelEl.innerHTML = '<strong>エラー</strong>';
+  fsValueEl.textContent = '-';
+  judgeTextEl.textContent = '入力値を確認してください';
+  statusChipEl.textContent = '判定: エラー';
+  statusChipEl.className = 'status-chip status-ng';
+  resultEl.textContent = `エラー: ${error.message}`;
+}
+
 methodEl.addEventListener('change', refreshVisibility);
 refreshVisibility();
 
 btn.addEventListener('click', () => {
   try {
-    const payload = Object.fromEntries(new FormData(form).entries());
-    Object.keys(payload).forEach((k) => (payload[k] = Number(payload[k])));
-
+    const payload = parsePayload();
     const result = methodEl.value === 'infinite_slope'
       ? calculateInfiniteSlopeFS(payload)
       : calculateFelleniusFS(payload);
-
-    const methodLabel = result.method === 'fellenius' ? 'Fellenius法（円弧探索付き分割法）' : '無限長斜面法';
-
-    resultEl.innerHTML = `
-      <strong>計算手法: ${methodLabel}</strong><br/>
-      <strong>安全率 FS = ${result.factor_of_safety.toFixed(3)}</strong><br/>
-      判定: ${result.is_stable ? '安定（必要安全率を満足）' : '不安定（対策が必要）'}
-    `;
+    updateResult(result, payload.required_fs);
   } catch (error) {
-    resultEl.textContent = `エラー: ${error.message}`;
+    showError(error);
   }
+});
+
+resetBtn.addEventListener('click', () => {
+  form.reset();
+  refreshVisibility();
+  methodLabelEl.innerHTML = '<strong>未計算</strong>';
+  fsValueEl.textContent = '-';
+  judgeTextEl.textContent = '計算待ち';
+  statusChipEl.textContent = '未判定';
+  statusChipEl.className = 'status-chip';
+  resultEl.textContent = '結果待ち';
 });
