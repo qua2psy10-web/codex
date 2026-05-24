@@ -176,6 +176,17 @@
 
       .muted { color: var(--muted); font-size: 0.9rem; }
 
+      .report-box {
+        width: 100%;
+        min-height: 180px;
+        border: 1px solid #cdd5df;
+        border-radius: 10px;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.82rem;
+        background: #fcfcfd;
+      }
+
       @media (max-width: 900px) {
         .layout { grid-template-columns: 1fr; }
         .grid { grid-template-columns: 1fr; }
@@ -234,6 +245,7 @@
           <div class="actions">
             <button id="calc" type="button">計算する</button>
             <button id="reset" type="button">初期値へ戻す</button>
+            <button id="download-report" type="button">計算報告書を保存</button>
           </div>
         </section>
 
@@ -265,6 +277,11 @@
           </div>
 
           <div id="result" class="muted">結果待ち</div>
+
+          <div>
+            <h3>計算報告書（ドラフト）</h3>
+            <textarea id="report-text" class="report-box" readonly>計算すると報告書ドラフトがここに表示されます。</textarea>
+          </div>
         </section>
       </main>
     </div>
