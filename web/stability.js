@@ -115,12 +115,14 @@ function calculateFelleniusFS(input) {
 const methodEl = document.getElementById('method');
 const btn = document.getElementById('calc');
 const resetBtn = document.getElementById('reset');
+const downloadBtn = document.getElementById('download-report');
 const form = document.getElementById('calc-form');
 const resultEl = document.getElementById('result');
 const methodLabelEl = document.getElementById('method-label');
 const fsValueEl = document.getElementById('fs-value');
 const judgeTextEl = document.getElementById('judge-text');
 const statusChipEl = document.getElementById('status-chip');
+const reportTextEl = document.getElementById('report-text');
 const infiniteFields = document.getElementById('infinite-fields');
 const felleniusFields = document.getElementById('fellenius-fields');
 
@@ -155,6 +157,56 @@ function updateResult(result, requiredFs) {
   ].join('<br/>');
 }
 
+
+
+function buildReport(payload, result) {
+  const now = new Date().toISOString();
+  const lines = [
+    '盛土法面 安定検討 計算報告書（ドラフト）',
+    '====================================',
+    `作成日時: ${now}`,
+    '',
+    '1. 計算条件',
+    `- 計算手法: ${result.method === 'fellenius' ? 'Fellenius法（円弧探索付き分割法）' : '無限長斜面法'}`,
+    `- 必要安全率: ${payload.required_fs}`,
+    `- 法面角度 β (deg): ${payload.slope_angle_deg}`,
+    `- 粘着力 c\' (kPa): ${payload.cohesion_kpa}`,
+    `- 内部摩擦角 φ\' (deg): ${payload.friction_angle_deg}`,
+    `- 単位体積重量 γ (kN/m3): ${payload.unit_weight_kn_m3}`,
+    `- 地下水比 m: ${payload.groundwater_ratio}`,
+  ];
+
+  if (result.method === 'infinite_slope') {
+    lines.push(`- 想定すべり深さ z (m): ${payload.failure_depth_m}`);
+  } else {
+    lines.push(`- 法面高さ H (m): ${payload.slope_height_m}`);
+    lines.push(`- 分割数 n: ${payload.slices}`);
+    lines.push(`- 円弧探索数: ${payload.search_steps}`);
+  }
+
+  lines.push('', '2. 計算結果');
+  lines.push(`- 安全率 FS: ${result.factor_of_safety.toFixed(3)}`);
+  lines.push(`- 判定: ${result.is_stable ? '安定（必要安全率を満足）' : '不安定（対策が必要）'}`);
+  lines.push('', '3. 備考');
+  lines.push('- 本報告書はWebアプリ自動生成のドラフトです。');
+  lines.push('- 実施設計では、道路土工指針の最新版、地盤調査、地震時条件、排水工・抑止工を含む総合照査を実施してください。');
+
+  return lines.join('\n');
+}
+
+function downloadReport(content) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = `stability-report-${stamp}.txt`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
 function showError(error) {
   methodLabelEl.innerHTML = '<strong>エラー</strong>';
   fsValueEl.textContent = '-';
@@ -162,6 +214,7 @@ function showError(error) {
   statusChipEl.textContent = '判定: エラー';
   statusChipEl.className = 'status-chip status-ng';
   resultEl.textContent = `エラー: ${error.message}`;
+  reportTextEl.value = 'エラーのため報告書を生成できません。入力値を見直してください。';
 }
 
 methodEl.addEventListener('change', refreshVisibility);
@@ -174,6 +227,7 @@ btn.addEventListener('click', () => {
       ? calculateInfiniteSlopeFS(payload)
       : calculateFelleniusFS(payload);
     updateResult(result, payload.required_fs);
+    reportTextEl.value = buildReport(payload, result);
   } catch (error) {
     showError(error);
   }
@@ -188,4 +242,13 @@ resetBtn.addEventListener('click', () => {
   statusChipEl.textContent = '未判定';
   statusChipEl.className = 'status-chip';
   resultEl.textContent = '結果待ち';
+});
+
+
+downloadBtn.addEventListener('click', () => {
+  if (!reportTextEl.value || reportTextEl.value.includes('生成できません') || reportTextEl.value.includes('表示されます。')) {
+    resultEl.textContent = '先に計算を実行してから報告書を保存してください。';
+    return;
+  }
+  downloadReport(reportTextEl.value);
 });
