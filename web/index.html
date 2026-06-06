@@ -3,272 +3,161 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>道路土工指針ベース 盛土法面安定計算モックアップ</title>
+    <title>河川堤防 重力式パラペット設計計算書</title>
     <style>
       :root {
-        --bg: #f3f6fb;
+        --bg: #eef4fb;
         --card: #ffffff;
-        --text: #1f2937;
+        --text: #172033;
         --muted: #667085;
-        --line: #d0d5dd;
-        --accent: #2563eb;
-        --accent-soft: #eaf1ff;
+        --line: #cfd8e3;
+        --accent: #0f5ba7;
+        --accent-soft: #e8f2ff;
         --ok: #027a48;
         --ng: #b42318;
+        --warn: #b54708;
       }
-
       * { box-sizing: border-box; }
-
-      body {
-        margin: 0;
-        font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-        color: var(--text);
-        background: var(--bg);
-      }
-
-      .container {
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 24px 16px 40px;
-      }
-
-      .hero {
-        background: linear-gradient(140deg, #1d4ed8, #1d7ad8);
-        color: #fff;
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 16px;
-      }
-
-      .hero h1 {
-        margin: 0 0 8px;
-        font-size: 1.55rem;
-      }
-
-      .hero p {
-        margin: 0;
-        opacity: 0.95;
-      }
-
-      .note {
-        background: #fff8e1;
-        border: 1px solid #f6ddb3;
-        border-radius: 10px;
-        padding: 12px;
-        margin: 0 0 16px;
-        font-size: 0.95rem;
-      }
-
-      .layout {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 16px;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 16px;
-      }
-
-      .card h2 {
-        margin: 0 0 12px;
-        font-size: 1.1rem;
-      }
-
-      .subtitle {
-        font-size: 0.9rem;
-        color: var(--muted);
-        margin-bottom: 12px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      label {
-        display: block;
-        font-size: 0.88rem;
-        color: #344054;
-      }
-
-      input, select {
-        width: 100%;
-        margin-top: 4px;
-        padding: 8px;
-        border: 1px solid #cdd5df;
-        border-radius: 8px;
-        font-size: 0.95rem;
-      }
-
-      .workflow {
-        display: grid;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-
-      .step {
-        border: 1px dashed #b9c4d6;
-        border-radius: 8px;
-        background: #f9fbff;
-        padding: 10px;
-        font-size: 0.9rem;
-      }
-
-      .actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 14px;
-      }
-
-      button {
-        border: 0;
-        border-radius: 8px;
-        padding: 10px 14px;
-        cursor: pointer;
-        font-weight: 600;
-      }
-
+      body { margin: 0; font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; color: var(--text); background: var(--bg); }
+      .container { max-width: 1280px; margin: 0 auto; padding: 22px 16px 40px; }
+      .hero { background: linear-gradient(135deg, #123d6b, #0f6fb8); color: #fff; border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+      .hero h1 { margin: 0 0 8px; font-size: 1.55rem; }
+      .hero p { margin: 0; line-height: 1.65; opacity: 0.96; }
+      .note { background: #fff8e1; border: 1px solid #f0d58a; border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; line-height: 1.6; }
+      .layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 14px; align-items: start; }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: 0 10px 24px rgba(15, 42, 77, 0.05); }
+      h2 { margin: 0 0 10px; font-size: 1.1rem; }
+      h3 { margin: 18px 0 8px; font-size: 1rem; color: #123d6b; }
+      .subtitle, .muted { color: var(--muted); font-size: 0.9rem; }
+      .sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+      label.cell { display: grid; grid-template-columns: 1fr; gap: 4px; min-height: 74px; padding: 8px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fbfdff; font-size: 0.83rem; }
+      input, select { width: 100%; border: 1px solid #b9c6d6; border-radius: 8px; padding: 8px; font-size: 0.94rem; background: #fff; }
+      .unit { color: var(--muted); font-size: 0.78rem; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+      button { border: 0; border-radius: 9px; padding: 10px 14px; cursor: pointer; font-weight: 700; }
       #calc { background: var(--accent); color: #fff; }
+      #save { background: #087443; color: #fff; }
+      #print { background: #6941c6; color: #fff; }
       #reset { background: #e4e7ec; color: #111827; }
-
-      .result-board {
-        display: grid;
-        gap: 10px;
-      }
-
-      .kpi {
-        background: var(--accent-soft);
-        border: 1px solid #d6e4ff;
-        border-radius: 10px;
-        padding: 10px;
-      }
-
-      .kpi strong {
-        font-size: 1.5rem;
-      }
-
-      .status-chip {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 700;
-      }
-
+      .result-board { display: grid; gap: 12px; }
+      .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .kpi { background: var(--accent-soft); border: 1px solid #cde2ff; border-radius: 12px; padding: 10px; }
+      .kpi strong { display: block; margin-top: 4px; font-size: 1.28rem; }
+      .status-chip { display: inline-block; border-radius: 999px; padding: 4px 10px; font-size: 0.82rem; font-weight: 700; }
       .status-ok { background: #e7f8ee; color: var(--ok); }
       .status-ng { background: #fdecec; color: var(--ng); }
-
-      .mock-plot {
-        border: 1px solid #d0d5dd;
-        border-radius: 10px;
-        padding: 8px;
-      }
-
-      .mock-plot svg {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
-
-      .muted { color: var(--muted); font-size: 0.9rem; }
-
-      @media (max-width: 900px) {
-        .layout { grid-template-columns: 1fr; }
-        .grid { grid-template-columns: 1fr; }
+      .status-warn { background: #fff4e5; color: var(--warn); }
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      th, td { border: 1px solid var(--line); padding: 7px; text-align: right; }
+      th:first-child, td:first-child { text-align: left; }
+      th { background: #f2f6fb; }
+      .plot { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fbfdff; }
+      .plot svg { width: 100%; height: auto; display: block; }
+      .report { display: none; margin-top: 14px; }
+      .report.visible { display: block; }
+      .report h2 { border-bottom: 3px solid var(--accent); padding-bottom: 8px; }
+      .report-section { margin-top: 18px; break-inside: avoid; }
+      .report-section h3 { border-left: 5px solid var(--accent); padding-left: 8px; }
+      .formula { margin: 6px 0; padding: 8px 10px; border-left: 3px solid #8bbcf0; background: #f7fbff; font-family: Consolas, "Yu Gothic", monospace; font-size: 0.86rem; line-height: 1.55; }
+      .signature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+      .signature-box { min-height: 54px; border: 1px solid var(--line); padding: 6px; color: var(--muted); }
+      .improvements { margin: 8px 0 0; padding-left: 20px; line-height: 1.55; }
+      @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } .sheet { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 640px) { .sheet, .kpis { grid-template-columns: 1fr; } }
+      @media print {
+        body { background: #fff; }
+        .actions, .note { display: none; }
+        .layout { display: block; }
+        .card { box-shadow: none; break-inside: avoid; margin-bottom: 12px; }
+        .report { display: block; page-break-before: always; }
+        .report-section { break-inside: avoid; }
+        table { font-size: 0.82rem; }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <header class="hero">
-        <h1>道路土工指針ベース 盛土法面安定計算（モックアップ）</h1>
-        <p>浅層すべり（無限長斜面法）と円弧すべり（Fellenius法）を切り替えて、予備設計の比較検討フローを体験できます。</p>
+        <h1>河川堤防 重力式パラペット設計計算書</h1>
+        <p>河川管理施設等構造令を前提条件として記録し、台形・前面/背面勾配付き断面の転倒、滑動、偏心、地盤支持力、極限支持力を照査する計算書作成用プロトタイプです。</p>
       </header>
-
-      <p class="note">
-        <strong>注意:</strong> 本画面はプロトタイプです。実施設計では道路土工指針の最新版、地盤調査結果、地震時条件、排水工・抑止工を含む総合照査を実施してください。
-      </p>
+      <p class="note"><strong>注意:</strong> 初期版は設計者の検算・計算書下書き用です。試行くさび法、受働土圧、揚圧力、震度法を実装していますが、提出前には最新基準、現地地盤定数、発注者協議条件で必ず照合してください。</p>
 
       <main class="layout">
         <section class="card">
-          <h2>入力パネル</h2>
-          <p class="subtitle">1) すべり形態を選択 → 2) 強度・水位条件を入力 → 3) 必要安全率と比較</p>
-
-          <div class="workflow">
-            <div class="step">STEP 1: 計算手法を選択（浅層 / 円弧）</div>
-            <div class="step">STEP 2: 土質定数・幾何条件・地下水条件を入力</div>
-            <div class="step">STEP 3: 安全率FSと判定を確認し、対策要否を整理</div>
-          </div>
-
-          <form id="calc-form" class="grid">
-            <label>
-              計算手法
-              <select id="method" name="method">
-                <option value="infinite_slope">無限長斜面法（浅層すべり）</option>
-                <option value="fellenius">Fellenius法（円弧すべり・分割法）</option>
-              </select>
-            </label>
-            <label>必要安全率<input name="required_fs" type="number" step="0.01" value="1.20" required /></label>
-
-            <label>法面角度 β (deg)<input name="slope_angle_deg" type="number" step="0.1" value="30" required /></label>
-            <label>粘着力 c' (kPa)<input name="cohesion_kpa" type="number" step="0.1" value="10" required /></label>
-            <label>内部摩擦角 φ' (deg)<input name="friction_angle_deg" type="number" step="0.1" value="32" required /></label>
-            <label>単位体積重量 γ (kN/m³)<input name="unit_weight_kn_m3" type="number" step="0.1" value="18" required /></label>
-            <label>地下水比 m (0-1)<input name="groundwater_ratio" type="number" step="0.01" min="0" max="1" value="0.2" required /></label>
-
-            <div id="infinite-fields" style="display: contents;">
-              <label>想定すべり深さ z (m)<input name="failure_depth_m" type="number" step="0.1" value="3" required /></label>
+          <h2>Excel風 入力シート</h2>
+          <p class="subtitle">個人利用向けにブラウザ内保存します。PDFは「計算書PDFを作成」から印刷ダイアログで保存してください。</p>
+          <form id="calc-form">
+            <h3>案件・荷重ケース</h3>
+            <div class="sheet">
+              <label class="cell">案件名<input name="project_name" type="text" value="サンプル河川堤防パラペット" /></label>
+              <label class="cell">検討日<input name="design_date" type="date" /></label>
+              <label class="cell">荷重ケース<select name="load_case"><option>常時</option><option>地震時</option><option>異常時</option></select></label>
             </div>
 
-            <div id="fellenius-fields" style="display: none;">
-              <label>法面高さ H (m)<input name="slope_height_m" type="number" step="0.1" value="12" required /></label>
-              <label>分割数 n (>=8)<input name="slices" type="number" step="1" min="8" value="16" required /></label>
-              <label>円弧探索数 (>=10)<input name="search_steps" type="number" step="1" min="10" value="36" required /></label>
+            <h3>形状寸法</h3>
+            <div class="sheet">
+              <label class="cell">パラペット高さ H <span class="unit">m</span><input name="parapet_height_m" type="number" step="0.01" value="2.40" required /></label>
+              <label class="cell">天端幅 Bt <span class="unit">m</span><input name="top_width_m" type="number" step="0.01" value="0.55" required /></label>
+              <label class="cell">底版幅 B <span class="unit">m</span><input name="base_width_m" type="number" step="0.01" value="1.75" required /></label>
+              <label class="cell">前面勾配 <span class="unit">H/V</span><input name="front_batter_hv" type="number" step="0.01" value="0.15" required /></label>
+              <label class="cell">背面勾配 <span class="unit">H/V</span><input name="back_batter_hv" type="number" step="0.01" value="0.35" required /></label>
+              <label class="cell">根入れ深さ Df <span class="unit">m</span><input name="embedment_depth_m" type="number" step="0.01" value="0.40" required /></label>
+              <label class="cell">地盤高 <span class="unit">m</span><input name="ground_level_m" type="number" step="0.01" value="0.00" /></label>
+              <label class="cell">背面土砂高さ <span class="unit">m</span><input name="backfill_height_m" type="number" step="0.01" value="2.20" required /></label>
+              <label class="cell">背面水位 <span class="unit">m</span><input name="water_level_back_m" type="number" step="0.01" value="1.80" required /></label>
+              <label class="cell">前面水位 <span class="unit">m</span><input name="water_level_front_m" type="number" step="0.01" value="0.30" required /></label>
+            </div>
+
+            <h3>材料・地盤定数</h3>
+            <div class="sheet">
+              <label class="cell">コンクリート単位体積重量 <span class="unit">kN/m³</span><input name="concrete_unit_weight_kn_m3" type="number" step="0.1" value="23.0" required /></label>
+              <label class="cell">土の単位体積重量 <span class="unit">kN/m³</span><input name="soil_unit_weight_kn_m3" type="number" step="0.1" value="18.0" required /></label>
+              <label class="cell">水の単位体積重量 <span class="unit">kN/m³</span><input name="water_unit_weight_kn_m3" type="number" step="0.01" value="9.81" required /></label>
+              <label class="cell">内部摩擦角 φ <span class="unit">deg</span><input name="friction_angle_deg" type="number" step="0.1" value="30.0" required /></label>
+              <label class="cell">粘着力 c <span class="unit">kPa</span><input name="cohesion_kpa" type="number" step="0.1" value="0.0" required /></label>
+              <label class="cell">基礎地盤許容支持力度 <span class="unit">kPa</span><input name="allowable_bearing_kpa" type="number" step="1" value="180" required /></label>
+              <label class="cell">摩擦係数 μ<input name="base_friction_coefficient" type="number" step="0.01" value="0.55" required /></label>
+              <label class="cell">コンクリート強度 <span class="unit">N/mm²</span><input name="concrete_strength_n_mm2" type="number" step="0.1" value="24" required /></label>
+            </div>
+
+            <h3>地震・安全率</h3>
+            <div class="sheet">
+              <label class="cell">水平震度 kh<input name="seismic_coefficient_h" type="number" step="0.01" value="0.15" required /></label>
+              <label class="cell">鉛直震度 kv<input name="seismic_coefficient_v" type="number" step="0.01" value="0.00" required /></label>
+              <label class="cell">必要FS 転倒<input name="required_fs_overturning" type="number" step="0.01" value="1.50" required /></label>
+              <label class="cell">必要FS 滑動<input name="required_fs_sliding" type="number" step="0.01" value="1.50" required /></label>
+              <label class="cell">必要FS 極限支持力<input name="required_fs_bearing" type="number" step="0.01" value="3.00" required /></label>
             </div>
           </form>
-
           <div class="actions">
             <button id="calc" type="button">計算する</button>
+            <button id="save" type="button">条件を保存</button>
+            <button id="print" type="button">計算書PDFを作成</button>
             <button id="reset" type="button">初期値へ戻す</button>
           </div>
         </section>
 
         <section class="card result-board">
-          <h2>結果パネル（モック）</h2>
-          <div class="kpi">
-            <div class="muted">計算手法</div>
-            <div id="method-label"><strong>未計算</strong></div>
+          <h2>結果・断面図</h2>
+          <div><span id="status-chip" class="status-chip status-warn">未計算</span></div>
+          <div class="kpis">
+            <div class="kpi"><span class="muted">合力作用位置 x</span><strong id="resultant-x">-</strong></div>
+            <div class="kpi"><span class="muted">最大接地圧 qmax</span><strong id="qmax">-</strong></div>
+            <div class="kpi"><span class="muted">転倒安全率</span><strong id="fs-overturning">-</strong></div>
+            <div class="kpi"><span class="muted">滑動安全率</span><strong id="fs-sliding">-</strong></div>
           </div>
-
-          <div class="kpi">
-            <div class="muted">最小安全率 FS</div>
-            <div><strong id="fs-value">-</strong></div>
-            <div id="judge-text" class="muted">計算待ち</div>
-          </div>
-
-          <div>
-            <span id="status-chip" class="status-chip">未判定</span>
-          </div>
-
-          <div class="mock-plot" aria-label="法面・すべり円のイメージ表示">
-            <svg viewBox="0 0 460 220" role="img">
-              <rect x="0" y="0" width="460" height="220" fill="#f9fafb" />
-              <line x1="40" y1="180" x2="170" y2="60" stroke="#475467" stroke-width="3" />
-              <line x1="170" y1="60" x2="430" y2="180" stroke="#475467" stroke-width="3" />
-              <path d="M 70 170 Q 220 20 390 165" fill="none" stroke="#2563eb" stroke-width="3" stroke-dasharray="8 6" />
-              <text x="48" y="36" fill="#667085" font-size="12">円弧すべり探索イメージ</text>
-            </svg>
-          </div>
-
-          <div id="result" class="muted">結果待ち</div>
+          <div class="plot"><svg id="section-svg" viewBox="0 0 520 300" role="img" aria-label="重力式パラペット断面図"></svg></div>
+          <div id="result-tables">計算待ち</div>
+          <div><h3>改善案</h3><ul id="improvements" class="improvements"><li>計算後に表示します。</li></ul></div>
         </section>
       </main>
-    </div>
 
-    <script src="./stability.js"></script>
+      <section id="report" class="card report">
+        <h2>発注者提出用 計算書ドラフト</h2>
+        <div id="report-content">計算後に作成されます。</div>
+      </section>
+    </div>
+    <script src="stability.js"></script>
   </body>
 </html>
